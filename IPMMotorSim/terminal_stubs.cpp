@@ -7,7 +7,6 @@
 
 Terminal* Terminal::defaultTerminal;
 
-Terminal t;
 
 Terminal::Terminal()
 {
@@ -53,13 +52,13 @@ void Terminal::SendBinary(uint8_t* data, uint32_t len)
     if(!logFile.isOpen())
     {
         logFile.open(QFile::WriteOnly);
-        TerminalCommands::PrintParamsJson(this,NULL);
+        TerminalCommands::PrintParamsJson(this,nullptr);
         logFile.write(binHeader, sizeof(binHeader));
     }
 
     if(logFile.isOpen())
     {
-        logFile.write((char *)data, len);
+        logFile.write(reinterpret_cast<char *>(data), len);
     }
 }
 
