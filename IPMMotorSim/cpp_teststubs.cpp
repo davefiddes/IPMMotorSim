@@ -17,46 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "inc_encoder.h"
-#include "params.h"
-#include "my_math.h"
-#include "pwmgeneration.h"
 #include "anain.h"
 #include "digio.h"
 #include "foc.h"
+#include "inc_encoder.h"
+#include "my_math.h"
+#include "params.h"
+#include "pwmgeneration.h"
 
+#define TWO_PI       65536
+#define STABLE_ANGLE ((10 * TWO_PI) / 360)
 
-#define TWO_PI            65536
-#define STABLE_ANGLE      ((10 * TWO_PI) / 360)
-
-//dummy globals
+// dummy globals
 uint32_t rcc_apb2_frequency = 72000000;
-HWREV hwRev;
+HWREV    hwRev;
 
-//test harness interface variables
+// test harness interface variables
 volatile uint16_t g_input_angle = 0;
-volatile double g_il1_input = 0;
-volatile double g_il2_input = 0;
+volatile double   g_il1_input = 0;
+volatile double   g_il2_input = 0;
 
-//OpenInverter variable
+// OpenInverter variable
 static volatile uint16_t angle = 0;
-static int32_t resolverMin = 0, resolverMax = 0, startupDelay=0;
-static uint32_t fullTurns = 0;
-static bool seenNorthSignal = true;
-static int32_t distance = 0;
-static int32_t turnsSinceLastSample = 0;
-static u32fp lastFrequency = 0;
-static int32_t detectedDirection = 0;
+static int32_t           resolverMin = 0, resolverMax = 0, startupDelay = 0;
+static uint32_t          fullTurns = 0;
+static bool              seenNorthSignal = true;
+static int32_t           distance = 0;
+static int32_t           turnsSinceLastSample = 0;
+static u32fp             lastFrequency = 0;
+static int32_t           detectedDirection = 0;
 
 static uint16_t lastAngle = 0;
-static int poleCounter = 0;
+static int      poleCounter = 0;
 
 void testStubsClearEncoder(void)
 {
     angle = 0;
     resolverMin = 0;
     resolverMax = 0;
-    startupDelay=0;
+    startupDelay = 0;
     fullTurns = 0;
     seenNorthSignal = true;
     distance = 0;
@@ -69,7 +68,7 @@ void testStubsClearEncoder(void)
 
 bool Encoder::SeenNorthSignal()
 {
-   return seenNorthSignal;
+    return seenNorthSignal;
 }
 
 void Encoder::UpdateRotorAngle(int dir)
@@ -81,15 +80,15 @@ void Encoder::UpdateRotorAngle(int dir)
 
     if (lastAngle <= (TWO_PI / 2) && angle > (TWO_PI / 2))
     {
-       if (poleCounter == 0)
-       {
-          fullTurns++;
-          poleCounter = Param::GetInt(Param::respolepairs);
-       }
-       else
-       {
-          poleCounter--;
-       }
+        if (poleCounter == 0)
+        {
+            fullTurns++;
+            poleCounter = Param::GetInt(Param::respolepairs);
+        }
+        else
+        {
+            poleCounter--;
+        }
     }
 
     lastAngle = angle;
@@ -97,18 +96,18 @@ void Encoder::UpdateRotorAngle(int dir)
 
 void Encoder::UpdateTurns(uint16_t angle, uint16_t lastAngle)
 {
-   int signedDiff = (int)angle - (int)lastAngle;
-   int absDiff = ABS(signedDiff);
-   int sign = signedDiff < 0 ? -1 : 1;
+    int signedDiff = (int)angle - (int)lastAngle;
+    int absDiff = ABS(signedDiff);
+    int sign = signedDiff < 0 ? -1 : 1;
 
-   if (absDiff > (TWO_PI / 2)) //wrap detection
-   {
-      sign = -sign;
-      signedDiff += sign * TWO_PI;
-      absDiff = ABS(signedDiff);
-   }
+    if (absDiff > (TWO_PI / 2)) // wrap detection
+    {
+        sign = -sign;
+        signedDiff += sign * TWO_PI;
+        absDiff = ABS(signedDiff);
+    }
 
-   turnsSinceLastSample += signedDiff;
+    turnsSinceLastSample += signedDiff;
 }
 
 void Encoder::UpdateRotorFrequency(int callingFrequency)
@@ -118,30 +117,29 @@ void Encoder::UpdateRotorFrequency(int callingFrequency)
     int absTurns = ABS(turnsSinceLastSample);
     if (startupDelay == 0 && absTurns > STABLE_ANGLE)
     {
-     lastFrequency = (callingFrequency * absTurns) / FP_TOINT(TWO_PI);
-     detectedDirection = turnsSinceLastSample > 0 ? 1 : -1;
+        lastFrequency = (callingFrequency * absTurns) / FP_TOINT(TWO_PI);
+        detectedDirection = turnsSinceLastSample > 0 ? 1 : -1;
     }
     else
     {
-     lastFrequency = 0;
+        lastFrequency = 0;
     }
     turnsSinceLastSample = 0;
-
 }
 
 uint16_t Encoder::GetRotorAngle()
 {
-   return angle;
+    return angle;
 }
 
 u32fp Encoder::GetRotorFrequency()
 {
-   return lastFrequency;
+    return lastFrequency;
 }
 
 int Encoder::GetRotorDirection()
 {
-   return detectedDirection;
+    return detectedDirection;
 }
 
 void timer_disable_break_main_output(int i)
@@ -152,52 +150,65 @@ void timer_disable_break_main_output(int i)
 /** This function is called when the user changes a parameter */
 void Param::Change(Param::PARAM_NUM paramNum)
 {
-   switch (paramNum)
-   {
-      case Param::canspeed:
-         break;
-      case Param::throtmax:
-      case Param::throtmin:
-      case Param::idcmin:
-      case Param::idcmax:
-      case Param::offthrotregen:
-         break;
-      case Param::nodeid:
-         break;
-      default:
-         PwmGeneration::SetCurrentLimitThreshold(Param::Get(Param::ocurlim));
-         PwmGeneration::SetPolePairRatio(Param::GetInt(Param::polepairs) / Param::GetInt(Param::respolepairs));
+    switch (paramNum)
+    {
+    case Param::canspeed:
+        break;
+    case Param::throtmax:
+    case Param::throtmin:
+    case Param::idcmin:
+    case Param::idcmax:
+    case Param::offthrotregen:
+        break;
+    case Param::nodeid:
+        break;
+    default:
+        PwmGeneration::SetCurrentLimitThreshold(Param::Get(Param::ocurlim));
+        PwmGeneration::SetPolePairRatio(
+            Param::GetInt(Param::polepairs) /
+            Param::GetInt(Param::respolepairs));
 
-         #if CONTROL == CTRL_FOC
-         PwmGeneration::SetControllerGains(Param::GetInt(Param::curkp), Param::GetInt(Param::curki));
-         FOC::SetMotorParameters(Param::GetFloat(Param::lqminusld)/1000, Param::GetFloat(Param::fluxlinkage)/1000);
-         #endif // CONTROL
-         break;
-   }
+#if CONTROL == CTRL_FOC
+        PwmGeneration::SetControllerGains(
+            Param::GetInt(Param::curkp), Param::GetInt(Param::curki));
+        FOC::SetMotorParameters(
+            Param::GetFloat(Param::lqminusld) / 1000,
+            Param::GetFloat(Param::fluxlinkage) / 1000);
+#endif // CONTROL
+        break;
+    }
 }
 
-void Encoder::SetPwmFrequency(uint32_t frq) {(void)frq;}
+void Encoder::SetPwmFrequency(uint32_t frq)
+{
+    (void)frq;
+}
 
-int printf(const char *format, ...) {(void)format;return 0;}
+int printf(const char* format, ...)
+{
+    (void)format;
+    return 0;
+}
 
 #undef ANA_IN_ENTRY
 #define ANA_IN_ENTRY(name, port, pin) AnaIn AnaIn::name(__COUNTER__);
 ANA_IN_LIST
 #undef ANA_IN_ENTRY
 
-uint8_t AnaIn::channel_array[ANA_IN_COUNT];
-uint16_t AnaIn::values[NUM_SAMPLES*ANA_IN_COUNT];
+uint8_t  AnaIn::channel_array[ANA_IN_COUNT];
+uint16_t AnaIn::values[NUM_SAMPLES * ANA_IN_COUNT];
 
 uint16_t AnaIn::Get()
 {
-    double iVal = 0;;
-    if(this == &AnaIn::il1)
+    double iVal = 0;
+    ;
+    if (this == &AnaIn::il1)
         iVal = g_il1_input;
-    else if(this == &AnaIn::il2)
+    else if (this == &AnaIn::il2)
         iVal = g_il2_input;
 
     iVal = iVal + 2048;
-    if(iVal > 4096)
+    if (iVal > 4096)
         return 4096;
     else if (iVal < 0)
         return 0;
@@ -214,5 +225,3 @@ void AnaIn::Configure(uint32_t port, uint8_t pin)
 #undef DIG_IO_ENTRY
 #define DIG_IO_ENTRY(name, port, pin, mode) DigIo DigIo::name;
 DIG_IO_LIST
-
-

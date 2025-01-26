@@ -20,19 +20,23 @@
 #ifndef DATAGRAPH_H
 #define DATAGRAPH_H
 
+#include "chart.h"
+#include "chartview.h"
 #include <QMainWindow>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
-#include "chartview.h"
-#include "chart.h"
 
-enum axisSel {left,right};
+enum axisSel
+{
+    left,
+    right
+};
 
 class DataGraph : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit DataGraph(QString name, QWidget *parent = nullptr);
+    explicit DataGraph(QString name, QWidget* parent = nullptr);
     ~DataGraph();
     void saveWinState();
     void addSeries(QString legend, axisSel axis, int key);
@@ -48,21 +52,20 @@ public:
     void setAxisText(QString x, QString left, QString right);
 
 private:
-    Chart *m_chart;
-    ChartView *m_chartView;
-    QMap<int, QList<QPointF> *> m_series;
-    QMap<int, QString> m_legends;
-    QMap<int, QColor> m_colours;
-    QMap<int, qreal> m_opacity;
-    QMap<int, axisSel> m_axis;
+    Chart*                     m_chart;
+    ChartView*                 m_chartView;
+    QMap<int, QList<QPointF>*> m_series;
+    QMap<int, QString>         m_legends;
+    QMap<int, QColor>          m_colours;
+    QMap<int, qreal>           m_opacity;
+    QMap<int, axisSel>         m_axis;
 
-    double minX, maxX, minY_L, maxY_L, minY_R, maxY_R;
+    double  minX, maxX, minY_L, maxY_L, minY_R, maxY_R;
     QString mName;
 
-    QValueAxis *m_axisL;
-    QValueAxis *m_axisR;
-    QValueAxis *m_axisX;
-
+    QValueAxis* m_axisL;
+    QValueAxis* m_axisR;
+    QValueAxis* m_axisX;
 
 signals:
 

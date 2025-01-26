@@ -3,14 +3,11 @@
 
 #include <QWidget>
 
-
 class Graph : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Graph(QWidget *parent = nullptr);
-
-
+    explicit Graph(QWidget* parent = nullptr);
 
 signals:
 

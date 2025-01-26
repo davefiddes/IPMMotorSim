@@ -30,16 +30,16 @@
 #include "chartview.h"
 #include <QtGui/QMouseEvent>
 
-ChartView::ChartView(QChart *chart, QWidget *parent) :
-    QChartView(chart, parent),
-    m_isTouching(false)
+ChartView::ChartView(QChart* chart, QWidget* parent)
+: QChartView(chart, parent), m_isTouching(false)
 {
     setRubberBand(QChartView::RectangleRubberBand);
 }
 
-bool ChartView::viewportEvent(QEvent *event)
+bool ChartView::viewportEvent(QEvent* event)
 {
-    if (event->type() == QEvent::TouchBegin) {
+    if (event->type() == QEvent::TouchBegin)
+    {
         // By default touch events are converted to mouse events. So
         // after this event we will get a mouse event also but we want
         // to handle touch events as gestures only. So we need this safeguard
@@ -53,21 +53,21 @@ bool ChartView::viewportEvent(QEvent *event)
     return QChartView::viewportEvent(event);
 }
 
-void ChartView::mousePressEvent(QMouseEvent *event)
+void ChartView::mousePressEvent(QMouseEvent* event)
 {
     if (m_isTouching)
         return;
     QChartView::mousePressEvent(event);
 }
 
-void ChartView::mouseMoveEvent(QMouseEvent *event)
+void ChartView::mouseMoveEvent(QMouseEvent* event)
 {
     if (m_isTouching)
         return;
     QChartView::mouseMoveEvent(event);
 }
 
-void ChartView::mouseReleaseEvent(QMouseEvent *event)
+void ChartView::mouseReleaseEvent(QMouseEvent* event)
 {
     if (m_isTouching)
         m_isTouching = false;
@@ -80,16 +80,17 @@ void ChartView::mouseReleaseEvent(QMouseEvent *event)
 }
 
 //![1]
-void ChartView::keyPressEvent(QKeyEvent *event)
+void ChartView::keyPressEvent(QKeyEvent* event)
 {
-    switch (event->key()) {
+    switch (event->key())
+    {
     case Qt::Key_Plus:
         chart()->zoomIn();
         break;
     case Qt::Key_Minus:
         chart()->zoomOut();
         break;
-//![1]
+        //![1]
     case Qt::Key_Left:
         chart()->scroll(-10, 0);
         break;

@@ -20,12 +20,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include "datagraph.h"
 #include "idiqgraph.h"
 #include "motormodel.h"
-
-
+#include <QMainWindow>
 
 namespace Ui {
 class MainWindow;
@@ -39,20 +37,20 @@ private:
     void runFor(int num_steps);
     void calcFluxLinkage(void);
 
-    DataGraph *motorGraph;
-    DataGraph *simulationGraph;
-    DataGraph *controllerGraph;
-    DataGraph *debugGraph;
-    DataGraph *voltageGraph;
-    IdIqGraph *idigGraph;
-    DataGraph *powerGraph;
-    MotorModel *motor;
-    double m_time;
-    uint32_t m_old_time;
-    uint32_t m_old_ms_time;
-    double m_oldVa;
-    double m_oldVb;
-    double m_oldVc;
+    DataGraph*  motorGraph;
+    DataGraph*  simulationGraph;
+    DataGraph*  controllerGraph;
+    DataGraph*  debugGraph;
+    DataGraph*  voltageGraph;
+    IdIqGraph*  idigGraph;
+    DataGraph*  powerGraph;
+    MotorModel* motor;
+    double      m_time;
+    uint32_t    m_old_time;
+    uint32_t    m_old_ms_time;
+    double      m_oldVa;
+    double      m_oldVb;
+    double      m_oldVc;
 
     double m_wheelSize;
     double m_vehicleWeight;
@@ -70,10 +68,10 @@ private:
     double m_Vdc;
 
     double m_runTime;
-    int m_lastTorqueDemand;
+    int    m_lastTorqueDemand;
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -172,8 +170,8 @@ private slots:
     void on_rb_OP_Amps_toggled(bool checked);
 
 private:
-    Ui::MainWindow *ui;
-    void closeEvent(QCloseEvent *bar);
+    Ui::MainWindow* ui;
+    void            closeEvent(QCloseEvent* bar);
 };
 
 #endif // MAINWINDOW_H

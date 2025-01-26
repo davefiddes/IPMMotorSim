@@ -20,13 +20,13 @@
 #ifndef IDIQGRAPH_H
 #define IDIQGRAPH_H
 
-#include <QMainWindow>
 #include "datagraph.h"
+#include <QMainWindow>
 
 class IdIqGraph : public DataGraph
 {
 public:
-    explicit IdIqGraph(QString name, QWidget *parent = nullptr);
+    explicit IdIqGraph(QString name, QWidget* parent = nullptr);
     void updateGraph(bool isAmps);
 };
 

@@ -47,17 +47,18 @@ class Chart : public QChart
 //![1]
 {
 public:
-    explicit Chart(QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = Qt::WindowFlags());
+    explicit Chart(
+        QGraphicsItem*  parent = 0,
+        Qt::WindowFlags wFlags = Qt::WindowFlags());
     ~Chart();
 
 protected:
-    bool sceneEvent(QEvent *event);
+    bool sceneEvent(QEvent* event);
 
 private:
-    bool gestureEvent(QGestureEvent *event);
+    bool gestureEvent(QGestureEvent* event);
 
 private:
-
 };
 
 #endif // CHART_H
