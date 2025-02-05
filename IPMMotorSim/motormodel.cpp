@@ -19,8 +19,31 @@
 
 #include "motormodel.h"
 
-MotorModel::MotorModel(double wheelSize,double ratio,double roadGradient,double mass,double Lq,double Ld,double Rs,double poles,double fluxLink,double timestep, double syncDelay, double sampPoint)
-    :m_WheelSize{wheelSize},m_Ratio{ratio},m_RoadGradient{roadGradient},m_Mass{mass},m_Lq{Lq},m_Ld{Ld},m_Rs{Rs},m_Poles{poles},m_FluxLink{fluxLink},m_Timestep{timestep}, m_syncdelay{syncDelay}, m_samplingPoint{sampPoint}
+MotorModel::MotorModel(
+    double wheelSize,
+    double ratio,
+    double roadGradient,
+    double mass,
+    double Lq,
+    double Ld,
+    double Rs,
+    double poles,
+    double fluxLink,
+    double timestep,
+    double syncDelay,
+    double sampPoint)
+: m_WheelSize{ wheelSize },
+  m_Ratio{ ratio },
+  m_RoadGradient{ roadGradient },
+  m_Mass{ mass },
+  m_Lq{ Lq },
+  m_Ld{ Ld },
+  m_Rs{ Rs },
+  m_Poles{ poles },
+  m_FluxLink{ fluxLink },
+  m_syncdelay{ syncDelay },
+  m_samplingPoint{ sampPoint },
+  m_Timestep{ timestep }
 {
     Restart();
 }
@@ -42,7 +65,7 @@ void MotorModel::Restart(void)
     m_Torque = 0;
 }
 
-void MotorModel::Step(double Va, double Vb, double Vc)
+void MotorModel::Step(double Va, double Vb, [[maybe_unused]] double Vc)
 {
     double Valpha = Va;
     double Vbeta = ((Va+(2.0*Vb))/qSqrt(3.0));

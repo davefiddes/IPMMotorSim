@@ -21,6 +21,10 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 
+/* Disable unused parameter warnings as this applies to most stub functions in
+ * this file*/
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 volatile bool disablePWM = true;
 
 void timer_enable_break_main_output(uint32_t timer_peripheral) {disablePWM = false;}
@@ -28,7 +32,7 @@ void timer_disable_break_main_output(uint32_t timer_peripheral) {disablePWM = tr
 
 void timer_enable_oc_output(uint32_t timer_peripheral, enum tim_oc_id oc_id) {}
 void timer_disable_irq(uint32_t timer_peripheral, uint32_t irq) {}
-uint32_t timer_get_counter(uint32_t timer_peripheral) {}
+uint32_t timer_get_counter(uint32_t timer_peripheral) {return 0;}
 void timer_clear_flag(uint32_t timer_peripheral, uint32_t flag) {}
 void timer_disable_oc_output(uint32_t timer_peripheral, enum tim_oc_id oc_id) {}
 void timer_set_oc_polarity_low(uint32_t timer_peripheral, enum tim_oc_id oc_id) {}
@@ -55,7 +59,7 @@ void timer_enable_counter(uint32_t timer_peripheral) {}
 void timer_disable_counter(uint32_t timer_peripheral) {}
 void timer_set_clock_division(uint32_t timer_peripheral, uint32_t clock_div) {}
 
-uint16_t gpio_get(uint32_t gpioport, uint16_t gpios) {}
+uint16_t gpio_get(uint32_t gpioport, uint16_t gpios) {return 0;}
 void gpio_set(uint32_t gpioport, uint16_t gpios) {}
 void gpio_set_mode(uint32_t gpioport, uint8_t mode, uint8_t cnf, uint16_t gpios) {}
 

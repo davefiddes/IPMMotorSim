@@ -56,7 +56,7 @@ target_compile_definitions(
 target_compile_options(
     IPMMotorSim
     PRIVATE
-    # -Werror
+    -Werror
     -Wall
     -Wextra # reasonable and standard
 

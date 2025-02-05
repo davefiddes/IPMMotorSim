@@ -8,7 +8,6 @@
 Terminal* Terminal::defaultTerminal;
 
 Terminal t;
-static Terminal* terminal = &t;
 
 Terminal::Terminal()
 {
@@ -64,9 +63,11 @@ void Terminal::SendBinary(uint8_t* data, uint32_t len)
     }
 }
 
-void TerminalCommands::PrintParamsJson(Terminal* term, char *arg)
+void TerminalCommands::PrintParamsJson(
+    [[maybe_unused]] Terminal* term,
+    [[maybe_unused]] char*     arg)
 {
-   //arg = my_trim(arg);
+    // arg = my_trim(arg);
     QTextStream out(&logFile);
     QString str;
 
@@ -77,9 +78,6 @@ void TerminalCommands::PrintParamsJson(Terminal* term, char *arg)
    out << "{";
    for (uint32_t idx = 0; idx < Param::PARAM_LAST; idx++)
    {
-      int canId, canOffset, canLength;
-      bool isRx;
-      s32fp canGain;
       pAtr = Param::GetAttrib((Param::PARAM_NUM)idx);
 
       if ((Param::GetFlag((Param::PARAM_NUM)idx) & Param::FLAG_HIDDEN) == 0 || printHidden)
