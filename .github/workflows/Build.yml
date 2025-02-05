@@ -1,0 +1,81 @@
+name: Build
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        build: [Debug,Release]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          host: 'linux'
+          arch: linux_gcc_64
+          tools: 'tools_ninja'
+          target: 'desktop'
+          modules: 'qtcharts'
+          cache: true
+
+      - name: Build simulator
+        run: |
+          cmake -B build -S IPMMotorSim -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build}}
+          cmake --build build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPMMotorSim Linux ${{matrix.build}} binary
+          path: build/IPMMotorSim
+
+  build-windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        build: [Debug,Release]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          host: 'windows'
+          arch: win64_mingw
+          tools: 'tools_mingw1310 tools_cmake tools_ninja'
+          target: 'desktop'
+          modules: 'qtcharts'
+          cache: true
+
+      - name: Build simulator
+        run: |
+          cmake -B build -S IPMMotorSim -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build}}
+          cmake --build build
+
+      - name: Prepare build artifacts
+        run: |
+          $upload = "upload/IPMMotorSim"
+          mkdir $upload
+          copy build/IPMMotorSim.exe $upload
+
+          windeployqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --compiler-runtime --no-opengl-sw $upload/IPMMotorSim.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPMMotorSim Windows ${{matrix.build}} binary
+          path: upload
