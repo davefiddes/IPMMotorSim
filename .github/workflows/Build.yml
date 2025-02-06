@@ -1,7 +1,15 @@
 name: Build
 on:
   push:
+    paths-ignore:
+      - '.vscode/**'
+      - 'docs/**'
+      - '**.md'
   pull_request:
+    paths-ignore:
+      - '.vscode/**'
+      - 'docs/**'
+      - '**.md'
 
 jobs:
   build-linux:
