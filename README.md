@@ -12,7 +12,7 @@ The model is not intended to be perfect and is in the very early days of its dev
 
 ## Binaries
 
-Prebuilt binaries for Windows and Linux can be found on the most recent [Build](../../actions/workflows/Build.yml) run. The Linux binaries assume that Qt6 has been installed. The Windows binaries should just unzip and run.
+Prebuilt binaries for Windows and Linux can be found on the most recent [Build](../../actions/workflows/Build.yml) run. The Linux binaries assume that Qt6 has been installed. The Windows binaries should just unzip and run though you might need to approve them in SmartScreen as they are just random binaries you downloaded from the Internet... 😳
 
 ## Compiling
 
@@ -24,9 +24,8 @@ Build the software using CMake:
 
 ```text
 mkdir build
-cd build
-cmake -S .. -G Ninja
-cmake --build .
+cmake -B build -S IPMMotorSim
+cmake --build build
 ```
 
 ## Current Limitations
