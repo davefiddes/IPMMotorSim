@@ -85,11 +85,17 @@ extern volatile double g_il2_input;
 // C test stubs globals
 extern volatile bool disablePWM;
 
+static const bool EnableLogging = false;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    if (EnableLogging)
+    {
+        logStart();
+    }
+
     ui->setupUi(this);
 
     QSettings settings("OpenInverter", "IPMMotorSim");
@@ -280,6 +286,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    logStop();
     delete ui;
 }
 
@@ -327,6 +334,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::runFor(int num_steps)
 {
+    logSimRunParameters( num_steps);
+
     double Va = 0;
     double Vb = 0;
     double Vc = 0;
@@ -373,7 +382,7 @@ void MainWindow::runFor(int num_steps)
         {
             m_old_ms_time = (uint32_t)(m_time*100);
             //not used at the moment but left in for future use
-        }        
+        }
 
         g_input_angle = (uint16_t)((motor->getElecPosition()*TWO_PI_CONT)/360.0);
         if(disablePWM)
@@ -523,6 +532,195 @@ void MainWindow::runFor(int num_steps)
     if(ui->cb_MotVolt->isChecked()) voltageGraph->updateGraph();
     if(ui->cb_OpPoint->isChecked()) idigGraph->updateGraph();
     if(ui->cb_PowTorqTime->isChecked()) powerGraph->updateGraph();
+
+    logSimResults(
+        listIa,
+        listIb,
+        listIc,
+        listIq,
+        listId,
+        listMFreq,
+        listMPos,
+        listContMPos,
+        listCVa,
+        listCVb,
+        listCVc,
+        listCVq,
+        listCVd,
+        listCIq,
+        listCId,
+        listCifw,
+        listVVd,
+        listVVq,
+        listVVq_bemf,
+        listVVq_dueto_id,
+        listVVd_dueto_iq,
+        listVVq_dueto_Rq,
+        listVVd_dueto_Rd,
+        listVVLd,
+        listVVLq,
+        listIdIq,
+        listPower,
+        listTorque);
+}
+
+void MainWindow::logStart()
+{
+    m_log.open("log.json"),
+    m_log << "[" << std::endl;
+}
+
+void MainWindow::logSimRunParameters(int num_steps)
+{
+    if (!m_log.is_open())
+    {
+        return;
+    }
+
+    // clang-format off
+    m_log << "{\n" <<
+
+    "\t\"parameters\": {\n" <<
+
+    "\t\t\"NumSteps\": " << num_steps << ",\n" <<
+
+    "\t\t\"VehicleWeight\": " << ui->vehicleWeight->text().toDouble() << ",\n" <<
+    "\t\t\"WheelSize:\": " << ui->wheelSize->text().toDouble() << ",\n" <<
+    "\t\t\"GearRatio\": " << ui->gearRatio->text().toDouble() << ",\n" <<
+    "\t\t\"Vdc\": " << ui->Vdc->text().toDouble() << ",\n" <<
+    "\t\t\"Lq\": " << ui->Lq->text().toDouble() << ",\n" <<
+    "\t\t\"Ld\": " << ui->Ld->text().toDouble() << ",\n" <<
+    "\t\t\"Rs\": " << ui->Rs->text().toDouble() << ",\n" <<
+    "\t\t\"FluxLinkage\": " << ui->FluxLinkage->text().toDouble() << ",\n" <<
+    "\t\t\"SyncDelay\": " << ui->SyncDelay->text().toDouble() << ",\n" <<
+    "\t\t\"LoopFreq\": " << ui->LoopFreq->text().toDouble() << ",\n" <<
+    "\t\t\"SamplingPoint\": " << ui->SamplingPoint->text().toDouble() << ",\n" <<
+    "\t\t\"ExtraCycleDelay\": " << (ui->ExtraCycleDelay->isChecked() ? "true" : "false") << ",\n" <<
+    "\t\t\"AddNoise\": " << (ui->AddNoise->isChecked() ? "true" : "false") << ",\n" <<
+    "\t\t\"NoiseAmp\": " << ui->NoiseAmp->text().toDouble() << ",\n" <<
+    "\t\t\"RoadGradient\": " << ui->RoadGradient->text().toDouble() << ",\n" <<
+    "\t\t\"ThrotRamps\": " << (ui->ThrotRamps->isChecked() ? "true" : "false") << ",\n" <<
+
+    "\t\t\"TorqueDemand\": " << ui->torqueDemand->text().toDouble() << ",\n" <<
+    "\t\t\"ThrottleCurrent\": " << ui->throttleCurrent->text().toFloat() << ",\n" <<
+    "\t\t\"OpMode\": " << ui->opMode->text().toInt() << ",\n" <<
+    "\t\t\"Direction\": " << ui->direction->text().toInt() << ",\n" <<
+    "\t\t\"IqManual\": " << ui->IqManual->text().toFloat() << ",\n" <<
+    "\t\t\"IdManual\": " << ui->IdManual->text().toFloat() << ",\n" <<
+    "\t\t\"Poles\": " << ui->Poles->text().toInt() << ",\n" <<
+    "\t\t\"CurrentKp\": " << ui->CurrentKp->text().toInt() << ",\n" <<
+    "\t\t\"CurrentKi\": " << ui->CurrentKi->text().toInt() << ",\n" <<
+    "\t\t\"VLimMargin\": " << ui->VLimMargin->text().toInt() << ",\n" <<
+    "\t\t\"VLimFlt\": " << ui->VLimFlt->text().toInt() << ",\n" <<
+    "\t\t\"LqMinusLd\": " << ui->LqMinusLd->text().toFloat() << ",\n" <<
+    "\t\t\"SyncAdv\": " << ui->SyncAdv->text().toInt() << ",\n" <<
+    "\t\t\"SyncOfs\": " << ui->SyncOfs->text().toInt() << ",\n" <<
+    "\t\t\"FWCurrMax\": " << ui->FWCurrMax->text().toInt() << ",\n" <<
+    "\t\t\"FreqMax\": " << ui->FreqMax->text().toFloat() << "\n" <<
+
+    "\t},\n";
+    // clang-format on
+}
+
+std::ostream& operator<<(std::ostream& stream, const QList<QPointF>& list)
+{
+    stream << "[";
+    bool first = true;
+    for (const auto& point : list)
+    {
+        stream << (first ? "\n" : ",\n") << "\t\t\t{\"t\":" << point.x()
+               << ", \"v\":" << point.y() << "}";
+        first = false;
+    }
+    stream << "\n\t\t]";
+
+    return stream;
+}
+
+void MainWindow::logSimResults(
+    const QList<QPointF>& listIa,
+    const QList<QPointF>& listIb,
+    const QList<QPointF>& listIc,
+    const QList<QPointF>& listIq,
+    const QList<QPointF>& listId,
+    const QList<QPointF>& listMFreq,
+    const QList<QPointF>& listMPos,
+    const QList<QPointF>& listContMPos,
+    const QList<QPointF>& listCVa,
+    const QList<QPointF>& listCVb,
+    const QList<QPointF>& listCVc,
+    const QList<QPointF>& listCVq,
+    const QList<QPointF>& listCVd,
+    const QList<QPointF>& listCIq,
+    const QList<QPointF>& listCId,
+    const QList<QPointF>& listCifw,
+    const QList<QPointF>& listVVd,
+    const QList<QPointF>& listVVq,
+    const QList<QPointF>& listVVq_bemf,
+    const QList<QPointF>& listVVq_dueto_id,
+    const QList<QPointF>& listVVd_dueto_iq,
+    const QList<QPointF>& listVVq_dueto_Rq,
+    const QList<QPointF>& listVVd_dueto_Rd,
+    const QList<QPointF>& listVVLd,
+    const QList<QPointF>& listVVLq,
+    const QList<QPointF>& listIdIq,
+    const QList<QPointF>& listPower,
+    const QList<QPointF>& listTorque)
+{
+    if (!m_log.is_open())
+    {
+        return;
+    }
+
+    // clang-format off
+    m_log << "\t\"results\": {\n" <<
+
+    "\t\t\"Ia\": " << listIa << ",\n"
+    "\t\t\"Ib\": " << listIb << ",\n"
+    "\t\t\"Ic\": " << listIc << ",\n"
+    "\t\t\"Iq\": " << listIq << ",\n"
+    "\t\t\"Id\": " << listId << ",\n"
+    "\t\t\"MFreq\": " << listMFreq << ",\n"
+    "\t\t\"MPos\": " << listMPos << ",\n"
+    "\t\t\"ContMPos\": " << listContMPos << ",\n"
+    "\t\t\"CVa\": " << listCVa << ",\n"
+    "\t\t\"CVb\": " << listCVb << ",\n"
+    "\t\t\"CVc\": " << listCVc << ",\n"
+    "\t\t\"CVq\": " << listCVq << ",\n"
+    "\t\t\"CVd\": " << listCVd << ",\n"
+    "\t\t\"CIq\": " << listCIq << ",\n"
+    "\t\t\"CId\": " << listCId << ",\n"
+    "\t\t\"Cifw\": " << listCifw << ",\n"
+    "\t\t\"VVd\": " << listVVd << ",\n"
+    "\t\t\"VVq\": " << listVVq << ",\n"
+    "\t\t\"VVq_bemf\": " << listVVq_bemf << ",\n"
+    "\t\t\"VVq_dueto_Id\": " << listVVq_dueto_id << ",\n"
+    "\t\t\"VVd_dueto_Iq\": " << listVVd_dueto_iq << ",\n"
+    "\t\t\"VVq_dueto_Rq\": " << listVVq_dueto_Rq << ",\n"
+    "\t\t\"VVd_dueto_Rd\": " << listVVd_dueto_Rd << ",\n"
+    "\t\t\"VVLd\": " << listVVLd << ",\n"
+    "\t\t\"VVLq\": " << listVVLq << ",\n"
+    "\t\t\"IdIq\": " << listIdIq << ",\n"
+    "\t\t\"Power\": " << listPower << ",\n"
+    "\t\t\"Torque\": " << listTorque << "\n"
+
+    "\t}\n}," << std::endl;
+    // clang-format on
+}
+
+void MainWindow::logStop()
+{
+    if (!m_log.is_open())
+    {
+        return;
+    }
+
+    if (m_log.tellp() > 1)
+    {
+        m_log.seekp(-3, std::ios_base::cur);
+        m_log << "\n";
+    }
+    m_log << "]" << std::endl;
 }
 
 void MainWindow::on_vehicleWeight_editingFinished()
@@ -727,7 +925,7 @@ void MainWindow::on_SyncOfs_editingFinished()
 }
 
 void MainWindow::on_pbAccelCoast_clicked()
-{   
+{
     QString torque = ui->torqueDemand->text();
     runFor(int(m_runTime/m_timestep));
     ui->torqueDemand->setText("0");

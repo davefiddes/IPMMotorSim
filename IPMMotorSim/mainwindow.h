@@ -25,6 +25,7 @@
 #include "idiqgraph.h"
 #include "motormodel.h"
 
+#include <fstream>
 
 
 namespace Ui {
@@ -38,6 +39,41 @@ class MainWindow : public QMainWindow
 private:
     void runFor(int num_steps);
     void calcFluxLinkage(void);
+
+    void logStart();
+    void logSimRunParameters( int num_steps);
+    void logSimResults(
+        const QList<QPointF>& listIa,
+        const QList<QPointF>& listIb,
+        const QList<QPointF>& listIc,
+        const QList<QPointF>& listIq,
+        const QList<QPointF>& listId,
+        const QList<QPointF>& listMFreq,
+        const QList<QPointF>& listMPos,
+        const QList<QPointF>& listContMPos,
+        const QList<QPointF>& listCVa,
+        const QList<QPointF>& listCVb,
+        const QList<QPointF>& listCVc,
+        const QList<QPointF>& listCVq,
+        const QList<QPointF>& listCVd,
+        const QList<QPointF>& listCIq,
+        const QList<QPointF>& listCId,
+        const QList<QPointF>& listCifw,
+        const QList<QPointF>& listVVd,
+        const QList<QPointF>& listVVq,
+        const QList<QPointF>& listVVq_bemf,
+        const QList<QPointF>& listVVq_dueto_id,
+        const QList<QPointF>& listVVd_dueto_iq,
+        const QList<QPointF>& listVVq_dueto_Rq,
+        const QList<QPointF>& listVVd_dueto_Rd,
+        const QList<QPointF>& listVVLd,
+        const QList<QPointF>& listVVLq,
+        const QList<QPointF>& listIdIq,
+        const QList<QPointF>& listPower,
+        const QList<QPointF>& listTorque);
+    void logStop();
+
+    std::ofstream m_log;
 
     DataGraph *motorGraph;
     DataGraph *simulationGraph;
