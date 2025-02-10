@@ -28,6 +28,7 @@
 #include "inc_encoder.h"
 #include "teststubs.h"
 #include "my_math.h"
+#include <cmath>
 
 #define GPIOA 0
 #define GPIOB 1
@@ -246,7 +247,7 @@ MainWindow::MainWindow(QWidget *parent) :
     idigGraph->setWindowTitle("Operating Point");
     idigGraph->setAxisText("Id (A)", "Iq (A)", "");
     idigGraph->addSeries("I (A)", left, IDIQAMPS);
-    if(settings.contains(ui->cb_OpPoint->objectName())) ui->cb_OpPoint->setChecked(settings.value(ui->cb_OpPoint->objectName()).toBool());    
+    if(settings.contains(ui->cb_OpPoint->objectName())) ui->cb_OpPoint->setChecked(settings.value(ui->cb_OpPoint->objectName()).toBool());
     if(settings.contains(ui->rb_OP_Amps->objectName()))
     {
         if(settings.value(ui->rb_OP_Amps->objectName()).toBool())
@@ -367,7 +368,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::runFor(int num_steps)
 {
-    logSimRunParameters( num_steps);
+    logSimRunParameters(num_steps);
 
     double Va = 0;
     double Vb = 0;
@@ -536,7 +537,8 @@ void MainWindow::runFor(int num_steps)
             if(ui->cb_Efficiency->isChecked())
             {
                 listElecPower.append(QPointF(motor->getMotorFreq()*60, elec_power/1000));
-                listEfficiency.append(QPointF(motor->getMotorFreq()*60, efficiency));
+                if (std::isfinite(efficiency))
+                    listEfficiency.append(QPointF(motor->getMotorFreq()*60, efficiency));
             }
         }
         else
@@ -546,7 +548,8 @@ void MainWindow::runFor(int num_steps)
             if(ui->cb_Efficiency->isChecked())
             {
                 listElecPower.append(QPointF(m_time, elec_power/1000));
-                listEfficiency.append(QPointF(m_time, efficiency));
+                if (std::isfinite(efficiency))
+                    listEfficiency.append(QPointF(m_time, efficiency));
             }
         }
 
@@ -627,7 +630,9 @@ void MainWindow::runFor(int num_steps)
         listVVLq,
         listIdIq,
         listPower,
-        listTorque);
+        listTorque,
+        listElecPower,
+        listEfficiency);
 }
 
 void MainWindow::logStart()
@@ -731,7 +736,9 @@ void MainWindow::logSimResults(
     const QList<QPointF>& listVVLq,
     const QList<QPointF>& listIdIq,
     const QList<QPointF>& listPower,
-    const QList<QPointF>& listTorque)
+    const QList<QPointF>& listTorque,
+    const QList<QPointF>& listElecPower,
+    const QList<QPointF>& listEfficiency)
 {
     if (!m_log.is_open())
     {
@@ -768,7 +775,9 @@ void MainWindow::logSimResults(
     "\t\t\"VVLq\": " << listVVLq << ",\n"
     "\t\t\"IdIq\": " << listIdIq << ",\n"
     "\t\t\"Power\": " << listPower << ",\n"
-    "\t\t\"Torque\": " << listTorque << "\n"
+    "\t\t\"Torque\": " << listTorque << ",\n"
+    "\t\t\"ElecPower\": " << listElecPower << ",\n"
+    "\t\t\"Efficiency\": " << listEfficiency << "\n"
 
     "\t}\n}," << std::endl;
     // clang-format on

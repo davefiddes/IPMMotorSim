@@ -70,7 +70,9 @@ private:
         const QList<QPointF>& listVVLq,
         const QList<QPointF>& listIdIq,
         const QList<QPointF>& listPower,
-        const QList<QPointF>& listTorque);
+        const QList<QPointF>& listTorque,
+        const QList<QPointF>& listElecPower,
+        const QList<QPointF>& listEfficiency);
     void logStop();
 
     std::ofstream m_log;
