@@ -38,7 +38,6 @@ class MainWindow : public QMainWindow
 
 private:
     void runFor(int num_steps);
-    void calcFluxLinkage(void);
 
     void logStart();
     void logSimRunParameters( int num_steps);
