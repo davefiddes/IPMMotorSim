@@ -43,7 +43,27 @@ MotorModel::MotorModel(
   m_FluxLink{ fluxLink },
   m_syncdelay{ syncDelay },
   m_samplingPoint{ sampPoint },
-  m_Timestep{ timestep }
+  m_Timestep{ timestep },
+  m_Ia{},
+  m_Ib{},
+  m_Ic{},
+  m_IaSamp{},
+  m_IbSamp{},
+  m_IcSamp{},
+  m_Id{},
+  m_Iq{},
+  m_Speed{},
+  m_Power{},
+  m_Torque{},
+  m_Vd{},
+  m_Vq{},
+  m_Vq_bemf{},
+  m_Vq_dueto_id{},
+  m_Vd_dueto_iq{},
+  m_Vq_dueto_Rq{},
+  m_Vd_dueto_Rd{},
+  m_VLd{},
+  m_VLq{}
 {
     Restart();
 }
