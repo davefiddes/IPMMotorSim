@@ -33,7 +33,6 @@ qt_add_executable(
     cpp_teststubs.cpp
     stm32-sine/src/pwmgeneration.cpp
     idiqgraph.cpp
-    terminal_stubs.cpp
 )
 
 target_include_directories(
