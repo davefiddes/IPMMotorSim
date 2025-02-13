@@ -144,10 +144,6 @@ int Encoder::GetRotorDirection()
    return detectedDirection;
 }
 
-void timer_disable_break_main_output([[maybe_unused]] int i)
-{
-}
-
 /** This function is called when the user changes a parameter */
 void Param::Change(Param::PARAM_NUM paramNum)
 {
