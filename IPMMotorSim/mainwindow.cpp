@@ -123,13 +123,13 @@ MainWindow::MainWindow(QWidget *parent) :
     if(settings.contains(ui->ThrotRamps->objectName())) ui->ThrotRamps->setChecked(settings.value(ui->ThrotRamps->objectName()).toBool());
     if(settings.contains(ui->cb_Efficiency->objectName())) ui->cb_Efficiency->setChecked(settings.value(ui->cb_Efficiency->objectName()).toBool());
 
-    motorGraph = new DataGraph("motor", this);
-    simulationGraph = new DataGraph("sim", this);
-    controllerGraph = new DataGraph("cont", this);
-    debugGraph = new DataGraph("debug", this);
-    voltageGraph = new DataGraph("voltage", this);
-    idigGraph = new IdIqGraph("idig", this);
-    powerGraph = new DataGraph("power", this);
+    motorGraph = std::make_unique<DataGraph>("motor", this);
+    simulationGraph = std::make_unique<DataGraph>("sim", this);
+    controllerGraph = std::make_unique<DataGraph>("cont", this);
+    debugGraph = std::make_unique<DataGraph>("debug", this);
+    voltageGraph = std::make_unique<DataGraph>("voltage", this);
+    idigGraph = std::make_unique<IdIqGraph>("idig", this);
+    powerGraph = std::make_unique<DataGraph>("power", this);
 
     motorGraph->hide();//not sure why needed but otherwise always up?
 
@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_Vdc = ui->Vdc->text().toDouble();
     Param::SetFloat(Param::udc, m_Vdc);
 
-    motor = new MotorModel(m_wheelSize,m_gearRatio,m_roadGradient,m_vehicleWeight,m_Lq,m_Ld,m_Rs,m_Poles,m_fluxLinkage,m_timestep,m_syncdelay,m_samplingPoint);
+    motor = std::make_unique<MotorModel>(m_wheelSize,m_gearRatio,m_roadGradient,m_vehicleWeight,m_Lq,m_Ld,m_Rs,m_Poles,m_fluxLinkage,m_timestep,m_syncdelay,m_samplingPoint);
 
     m_time = 0;
     m_old_time = 0;
