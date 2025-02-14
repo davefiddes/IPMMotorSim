@@ -43,32 +43,12 @@ MotorModel::MotorModel(
   m_FluxLink{ fluxLink },
   m_syncdelay{ syncDelay },
   m_samplingPoint{ sampPoint },
-  m_Timestep{ timestep },
-  m_Ia{},
-  m_Ib{},
-  m_Ic{},
-  m_IaSamp{},
-  m_IbSamp{},
-  m_IcSamp{},
-  m_Id{},
-  m_Iq{},
-  m_Speed{},
-  m_Power{},
-  m_Torque{},
-  m_Vd{},
-  m_Vq{},
-  m_Vq_bemf{},
-  m_Vq_dueto_id{},
-  m_Vd_dueto_iq{},
-  m_Vq_dueto_Rq{},
-  m_Vd_dueto_Rd{},
-  m_VLd{},
-  m_VLq{}
+  m_Timestep{ timestep }
 {
     Restart();
 }
 
-void MotorModel::Restart(void)
+void MotorModel::Restart()
 {
     m_Position = 0;
     m_Frequency = 0;
@@ -160,7 +140,7 @@ void MotorModel::Step(double Va, double Vb, [[maybe_unused]] double Vc)
 
 }
 
-double MotorModel::getMotorPosition(void)
+double MotorModel::getMotorPosition() const
 {
     double rotorPos = m_Position - (m_syncdelay * 360.0 * m_Poles * m_Frequency);
     if(rotorPos>(360.0 * m_Poles))
@@ -171,7 +151,7 @@ double MotorModel::getMotorPosition(void)
     return (rotorPos / m_Poles);
 }
 
-double MotorModel::getElecPosition(void)
+double MotorModel::getElecPosition() const
 {
     double rotorPos = m_Position - (m_syncdelay * 360.0 * m_Poles * m_Frequency);
     if(rotorPos>(360.0 * m_Poles))
@@ -181,9 +161,3 @@ double MotorModel::getElecPosition(void)
 
     return (fmod(rotorPos,360.0));
 }
-
-
-
-
-
-
