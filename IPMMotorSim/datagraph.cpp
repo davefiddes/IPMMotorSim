@@ -25,9 +25,9 @@
 #include <QSettings>
 #include <limits>
 
-DataGraph::DataGraph(QString name, QWidget *parent) : QMainWindow(parent)
+DataGraph::DataGraph(const QString& name, QWidget* parent)
+: QMainWindow(parent), m_name{ name }
 {
-    mName = name;
     QSettings settings("OpenInverter", "IPMMotorSim");
 
     minY_L =  std::numeric_limits<double>::max();
@@ -51,7 +51,7 @@ DataGraph::DataGraph(QString name, QWidget *parent) : QMainWindow(parent)
     m_chart->addAxis(m_axisR, Qt::AlignRight);
 
     setCentralWidget(m_chartView);
-    if(!restoreGeometry(settings.value(mName + "/geometry").toByteArray()) || !restoreState(settings.value(mName + "/windowState").toByteArray()))
+    if(!restoreGeometry(settings.value(m_name + "/geometry").toByteArray()) || !restoreState(settings.value(m_name + "/windowState").toByteArray()))
     {
         resize(1600, 300);
     }
@@ -60,7 +60,10 @@ DataGraph::DataGraph(QString name, QWidget *parent) : QMainWindow(parent)
     show();
 }
 
-void DataGraph::setAxisText(QString x, QString left, QString right)
+void DataGraph::setAxisText(
+    const QString& x,
+    const QString& left,
+    const QString& right)
 {
     m_axisX->setTitleText(x);
     m_axisL->setTitleText(left);
@@ -72,8 +75,8 @@ void DataGraph::saveWinState()
     QSettings settings("OpenInverter", "IPMMotorSim");
     QByteArray geo = saveGeometry();
     QByteArray ste = saveState();
-    QString gname = mName + "/geometry";
-    QString sname = mName + "/windowState";
+    QString gname = m_name + "/geometry";
+    QString sname = m_name + "/windowState";
     settings.setValue(gname, geo);
     settings.setValue(sname, ste);
     hide();
@@ -84,7 +87,7 @@ DataGraph::~DataGraph()
     clearData();
 }
 
-void DataGraph::addSeries(QString legend, axisSel axis, int key)
+void DataGraph::addSeries(const QString& legend, axisSel axis, int key)
 {
     if(m_series.contains(key))
         return;
@@ -95,7 +98,7 @@ void DataGraph::addSeries(QString legend, axisSel axis, int key)
     m_axis[key] = axis;
 }
 
-void DataGraph::updateSeries(QString legend, axisSel axis, int key)
+void DataGraph::updateSeries(const QString& legend, axisSel axis, int key)
 {
     if(!m_series.contains(key))
         return;
@@ -103,8 +106,6 @@ void DataGraph::updateSeries(QString legend, axisSel axis, int key)
     m_legends[key] = legend;
     m_axis[key] = axis;
 }
-
-
 
 void DataGraph::addDataPoint(double x, double y, int key)
 {
@@ -127,7 +128,7 @@ void DataGraph::addDataPoint(double x, double y, int key)
     }
 }
 
-void DataGraph::addDataPoints(QList<QPointF> pointList, int key)
+void DataGraph::addDataPoints(const QList<QPointF>& pointList, int key)
 {
     if(m_series.contains(key))
     {
@@ -154,7 +155,7 @@ void DataGraph::addDataPoints(QList<QPointF> pointList, int key)
     }
 }
 
-void DataGraph::updateGraph(void)
+void DataGraph::updateGraph()
 {
     m_chart->removeAllSeries();
 
@@ -191,7 +192,7 @@ void DataGraph::updateLeftYaxis(double min, double max)
     m_axisL->setRange(min, max);
 }
 
-void DataGraph::clearData(void)
+void DataGraph::clearData()
 {
     minY_L =  std::numeric_limits<double>::max();
     maxY_L =  std::numeric_limits<double>::lowest();
@@ -207,7 +208,7 @@ void DataGraph::clearData(void)
     }
 }
 
-void DataGraph::setColour(QColor colour, int key)
+void DataGraph::setColour(const QColor& colour, int key)
 {
     m_colours[key] = colour;
 }

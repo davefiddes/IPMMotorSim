@@ -21,14 +21,14 @@
 #include "idiqgraph.h"
 #include "params.h"
 
-IdIqGraph::IdIqGraph(QString name, QWidget *parent) : DataGraph (name, parent)
+IdIqGraph::IdIqGraph(const QString& name, QWidget *parent) : DataGraph (name, parent)
 {
     addSeries("Is (A)",left, 10);
 }
 
 void IdIqGraph::updateGraph(bool isAmps)
 {
-    double d, q, s;
+    double s;
     QList<QPointF> list;
 
     //add is circle
@@ -45,8 +45,8 @@ void IdIqGraph::updateGraph(bool isAmps)
 
     for(double ang = 0;ang < 360;ang++)
     {
-        d = s * qCos(qDegreesToRadians(ang));
-        q = s * qSin(qDegreesToRadians(ang));
+        double d = s * qCos(qDegreesToRadians(ang));
+        double q = s * qSin(qDegreesToRadians(ang));
         list.append(QPointF(d, q));
     }
     addDataPoints(list, 10);

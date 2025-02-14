@@ -32,20 +32,20 @@ class DataGraph : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit DataGraph(QString name, QWidget *parent = nullptr);
+    explicit DataGraph(const QString& name, QWidget *parent = nullptr);
     ~DataGraph();
     void saveWinState();
-    void addSeries(QString legend, axisSel axis, int key);
-    void updateSeries(QString legend, axisSel axis, int key);
+    void addSeries(const QString& legend, axisSel axis, int key);
+    void updateSeries(const QString& legend, axisSel axis, int key);
     void addDataPoint(double x, double y, int key);
-    void addDataPoints(QList<QPointF> pointList, int key);
+    void addDataPoints(const QList<QPointF>& pointList, int key);
     void clearData();
-    void updateGraph(void);
+    void updateGraph();
     void updateXaxis(double min, double max);
     void updateLeftYaxis(double min, double max);
-    void setColour(QColor colour, int key);
+    void setColour(const QColor& colour, int key);
     void setOpacity(qreal opacity, int key);
-    void setAxisText(QString x, QString left, QString right);
+    void setAxisText(const QString& x, const QString& left, const QString& right);
 
 private:
     Chart *m_chart;
@@ -57,7 +57,7 @@ private:
     QMap<int, axisSel> m_axis;
 
     double minX, maxX, minY_L, maxY_L, minY_R, maxY_R;
-    QString mName;
+    QString m_name;
 
     QValueAxis *m_axisL;
     QValueAxis *m_axisR;

@@ -44,7 +44,7 @@ class ChartView : public QChartView
 //![1]
 {
 public:
-    ChartView(QChart *chart, QWidget *parent = 0);
+    explicit ChartView(QChart *chart, QWidget *parent = 0);
 
 //![2]
 protected:

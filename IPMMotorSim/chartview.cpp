@@ -69,8 +69,7 @@ void ChartView::mouseMoveEvent(QMouseEvent *event)
 
 void ChartView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_isTouching)
-        m_isTouching = false;
+    m_isTouching = false;
 
     // Because we disabled animations when touch event was detected
     // we must put them back on.
