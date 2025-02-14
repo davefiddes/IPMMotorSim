@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 
 project(IPMMotorSim LANGUAGES C CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Charts)
@@ -11,6 +13,8 @@ set(CMAKE_CXX_STANDARD
     20
     CACHE INTERNAL "")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(StaticChecks)
 
 qt_add_executable(
     IPMMotorSim
