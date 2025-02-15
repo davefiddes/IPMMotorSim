@@ -156,24 +156,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->SyncAdv->setText(QString::number(Param::GetInt(Param::syncadv)));
     ui->throttleCurrent->setText(QString::number(Param::GetFloat(Param::throtcur), 'f', 1));
 
-    m_wheelSize = ui->wheelSize->text().toDouble();
-    m_vehicleWeight = ui->vehicleWeight->text().toDouble();
-    m_gearRatio = ui->gearRatio->text().toDouble();
-    m_Lq = ui->Lq->text().toDouble()/1000; //entered in mH
-    m_Ld = ui->Ld->text().toDouble()/1000; //entered in mH
-    m_Rs = ui->Rs->text().toDouble();
-    m_Poles = ui->Poles->text().toDouble();
-    m_fluxLinkage = ui->FluxLinkage->text().toDouble()/1000; //entered in mWeber
-    m_syncdelay = ui->SyncDelay->text().toDouble()/1000000; //entered in uS
-    m_samplingPoint = ui->SamplingPoint->text().toDouble()/100.0; //entered in %
-    m_roadGradient = ui->RoadGradient->text().toDouble()/100.0; //entered in %
     m_runTime = ui->runTime->text().toDouble();
 
     m_timestep = 1.0 / ui->LoopFreq->text().toDouble();
     m_Vdc = ui->Vdc->text().toDouble();
     Param::SetFloat(Param::udc, m_Vdc);
 
-    motor = std::make_unique<MotorModel>(m_wheelSize,m_gearRatio,m_roadGradient,m_vehicleWeight,m_Lq,m_Ld,m_Rs,m_Poles,m_fluxLinkage,m_timestep,m_syncdelay,m_samplingPoint);
+    motor = std::make_unique<MotorModel>(
+        ui->wheelSize->text().toDouble(),
+        ui->gearRatio->text().toDouble(),
+        ui->RoadGradient->text().toDouble()/100.0, //entered in %
+        ui->vehicleWeight->text().toDouble(),
+        ui->Lq->text().toDouble()/1000, //entered in mH
+        ui->Ld->text().toDouble()/1000, //entered in mH
+        ui->Rs->text().toDouble(),
+        ui->Poles->text().toDouble(),
+        ui->FluxLinkage->text().toDouble()/1000, //entered in mWeber
+        m_timestep,
+        ui->SyncDelay->text().toDouble()/1000000, //entered in uS
+        ui->SamplingPoint->text().toDouble()/100.0 //entered in %
+        );
 
     m_time = 0;
     m_old_time = 0;
@@ -486,7 +488,7 @@ void MainWindow::runFor(int num_steps)
         listIq.append(QPointF(m_time, motor->getIq()));
         listId.append(QPointF(m_time, motor->getId()));
 
-        listMFreq.append(QPointF(m_time, (motor->getMotorFreq()*m_Poles)));
+        listMFreq.append(QPointF(m_time, (motor->getMotorFreq()*motor->getPoles())));
         if(ui->cb_MotorPos->isChecked())
         {
             listMPos.append(QPointF(m_time, motor->getMotorPosition()));
@@ -802,20 +804,17 @@ void MainWindow::logStop()
 
 void MainWindow::on_vehicleWeight_editingFinished()
 {
-    m_vehicleWeight = ui->vehicleWeight->text().toDouble();
-    motor->setVehicleMass(m_vehicleWeight);
+    motor->setVehicleMass(ui->vehicleWeight->text().toDouble());
 }
 
 void MainWindow::on_wheelSize_editingFinished()
 {
-    m_wheelSize = ui->wheelSize->text().toDouble();
-    motor->setWheelSize(m_wheelSize);
+    motor->setWheelSize(ui->wheelSize->text().toDouble());
 }
 
 void MainWindow::on_gearRatio_editingFinished()
 {
-    m_gearRatio = ui->gearRatio->text().toDouble();
-    motor->setGboxRatio(m_gearRatio);
+    motor->setGboxRatio(ui->gearRatio->text().toDouble());
 }
 
 void MainWindow::on_Vdc_editingFinished()
@@ -826,35 +825,30 @@ void MainWindow::on_Vdc_editingFinished()
 
 void MainWindow::on_Lq_editingFinished()
 {
-    m_Lq = ui->Lq->text().toDouble()/1000;
-    motor->setLq(m_Lq);
+    motor->setLq(ui->Lq->text().toDouble()/1000);
 }
 
 void MainWindow::on_Ld_editingFinished()
 {
-    m_Ld = ui->Ld->text().toDouble()/1000;
-    motor->setLd(m_Ld);
+    motor->setLd(ui->Ld->text().toDouble()/1000);
 }
 
 void MainWindow::on_Rs_editingFinished()
 {
-    m_Rs = ui->Rs->text().toDouble();
-    motor->setRs(m_Rs);
+    motor->setRs(ui->Rs->text().toDouble());
 }
 
 void MainWindow::on_Poles_editingFinished()
 {
-    m_Poles = ui->Poles->text().toDouble();
     Param::Set(Param::polepairs, FP_FROMINT(ui->Poles->text().toInt()));
     Param::Set(Param::respolepairs,FP_FROMINT(ui->Poles->text().toInt())); //force resolver pole pairs to match motor
-    motor->setPoles(m_Poles);
+    motor->setPoles(ui->Poles->text().toDouble());
 }
 
 void MainWindow::on_FluxLinkage_editingFinished()
 {
-    m_fluxLinkage = ui->FluxLinkage->text().toDouble()/1000;
     Param::Set(Param::fluxlinkage, FP_FROMFLT(ui->FluxLinkage->text().toFloat()));
-    motor->setFluxLinkage(m_fluxLinkage);
+    motor->setFluxLinkage(ui->FluxLinkage->text().toDouble()/1000);
     PwmGeneration::SetTorquePercent(ui->torqueDemand->text().toFloat()); //make sure is recalculated
 }
 
@@ -971,8 +965,8 @@ void MainWindow::on_LqMinusLd_editingFinished()
 
 void MainWindow::on_SyncDelay_editingFinished()
 {
-    m_syncdelay = ui->SyncDelay->text().toDouble()/1000000; //entered in uS
-    motor->setSyncDelay(m_syncdelay);
+    //entered in uS
+    motor->setSyncDelay(ui->SyncDelay->text().toDouble()/1000000);
 }
 
 void MainWindow::on_FreqMax_editingFinished()
@@ -982,8 +976,8 @@ void MainWindow::on_FreqMax_editingFinished()
 
 void MainWindow::on_SamplingPoint_editingFinished()
 {
-    m_samplingPoint = ui->SamplingPoint->text().toDouble()/100.0; //entered in %
-    motor->setSamplingPoint(m_samplingPoint);
+    //entered in %
+    motor->setSamplingPoint(ui->SamplingPoint->text().toDouble()/100.0);
 }
 
 void MainWindow::on_pbTransient_clicked()
@@ -1100,8 +1094,8 @@ void MainWindow::on_rb_Speed_toggled(bool checked)
 
 void MainWindow::on_RoadGradient_editingFinished()
 {
-    m_roadGradient = ui->RoadGradient->text().toDouble()/100.0; //entered in %
-    motor->setRoadGradient(m_roadGradient);
+    //entered in %
+    motor->setRoadGradient(ui->RoadGradient->text().toDouble()/100.0);
 }
 
 void MainWindow::on_runTime_editingFinished()

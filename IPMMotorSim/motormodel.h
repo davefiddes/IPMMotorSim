@@ -35,6 +35,7 @@ public:
     void setLd(double val) {m_Ld = val;}
     void setRs(double val) {m_Rs = val;}
     void setPoles(double val) {m_Poles = val;}
+    [[nodiscard]] double getPoles() const {return m_Poles;}
     void setFluxLinkage(double val) {m_FluxLink = val;}
     void setSyncDelay(double val) {m_syncdelay = val;}
     void setTimestep(double val) {m_Timestep = val;}

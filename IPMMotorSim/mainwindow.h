@@ -93,18 +93,6 @@ private:
     double m_oldVb;
     double m_oldVc;
 
-    double m_wheelSize;
-    double m_vehicleWeight;
-    double m_gearRatio;
-    double m_Lq;
-    double m_Ld;
-    double m_Rs;
-    double m_Poles;
-    double m_fluxLinkage;
-    double m_syncdelay;
-    double m_samplingPoint;
-    double m_roadGradient;
-
     double m_timestep;
     double m_Vdc;
 
