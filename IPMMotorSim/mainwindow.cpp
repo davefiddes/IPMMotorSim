@@ -29,6 +29,7 @@
 #include "teststubs.h"
 #include "my_math.h"
 #include <cmath>
+#include <sstream>
 
 #define GPIOA 0
 #define GPIOB 1
@@ -88,7 +89,7 @@ extern volatile double g_il2_input;
 // C test stubs globals
 extern volatile bool disablePWM;
 
-static const bool EnableLogging = false;
+static const bool EnableLogging = true;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -792,7 +793,8 @@ void MainWindow::logStop()
 
     if (m_log.tellp() > 1)
     {
-        m_log.seekp(-3, std::ios_base::cur);
+        std::ostringstream fileEnding("\n,");
+        m_log.seekp(-fileEnding.str().size(), std::ios_base::cur);
         m_log << "\n";
     }
     m_log << "]" << std::endl;
