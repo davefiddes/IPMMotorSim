@@ -20,6 +20,7 @@ qt_add_executable(
     IPMMotorSim
     WIN32 # Needed to avoid a stray console window on Windows
     main.cpp
+    actualmainwindow.cpp
     mainwindow.ui
     mainwindow.cpp
     chart.cpp

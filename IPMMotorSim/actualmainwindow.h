@@ -1,7 +1,7 @@
 /*
  * This file is part of the IPMMotorSim project
  *
- * Copyright (C) 2022 Pete9008 <openinverter.org>
+ * Copyright (C) 2025 David J. Fiddes <D.J@fiddes.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "actualmainwindow.h"
-#include <QApplication>
+#ifndef ACTUALMAINWINDOW_H
+#define ACTUALMAINWINDOW_H
 
-int main(int argc, char *argv[])
+#include <QMainWindow>
+
+QT_BEGIN_NAMESPACE
+class QMdiArea;
+QT_END_NAMESPACE
+
+class MainWindow;
+
+class ActualMainWindow : public QMainWindow
 {
-    QApplication a(argc, argv);
-    ActualMainWindow w;
-    w.show();
+    Q_OBJECT
 
-    return a.exec();
-}
+public:
+    ActualMainWindow(QWidget* parent = nullptr);
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
+private:
+    QMdiArea*   m_mdiArea;
+    MainWindow* m_paramWindow;
+};
+
+#endif // ACTUALMAINWINDOW_H
