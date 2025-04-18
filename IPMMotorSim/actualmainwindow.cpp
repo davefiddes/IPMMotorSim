@@ -21,9 +21,11 @@
 
 #include "actualmainwindow.h"
 #include "mainwindow.h"
+#include "datagraph.h"
+#include "idiqgraph.h"
 
 ActualMainWindow::ActualMainWindow(QWidget* parent)
-: QMainWindow(parent), m_mdiArea(new QMdiArea), m_paramWindow(new MainWindow)
+: QMainWindow(parent), m_mdiArea(new QMdiArea)
 {
     QMenu*   fileMenu = new QMenu(tr("&File"), this);
     QAction* quitAction = fileMenu->addAction(tr("E&xit"));
@@ -36,7 +38,30 @@ ActualMainWindow::ActualMainWindow(QWidget* parent)
     setCentralWidget(m_mdiArea);
     setWindowTitle(tr("OpenInverter IPM Motor Simulator"));
 
+    m_motorGraph = new DataGraph("motor");
+    m_simulationGraph = new DataGraph("sim", this);
+    m_controllerGraph = new DataGraph("cont", this);
+    m_debugGraph = new DataGraph("debug", this);
+    m_voltageGraph = new DataGraph("voltage", this);
+    m_idigGraph = new IdIqGraph("idig", this);
+    m_powerGraph = new DataGraph("power", this);
+    m_paramWindow = new MainWindow(
+        m_motorGraph,
+        m_simulationGraph,
+        m_controllerGraph,
+        m_debugGraph,
+        m_voltageGraph,
+        m_idigGraph,
+        m_powerGraph);
+
     m_mdiArea->addSubWindow(m_paramWindow);
+    m_mdiArea->addSubWindow(m_motorGraph);
+    m_mdiArea->addSubWindow(m_simulationGraph);
+    m_mdiArea->addSubWindow(m_controllerGraph);
+    m_mdiArea->addSubWindow(m_debugGraph);
+    m_mdiArea->addSubWindow(m_voltageGraph);
+    m_mdiArea->addSubWindow(m_idigGraph);
+    m_mdiArea->addSubWindow(m_powerGraph);
 }
 
 void ActualMainWindow::closeEvent([[maybe_unused]] QCloseEvent* event)

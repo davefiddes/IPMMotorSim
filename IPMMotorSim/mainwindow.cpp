@@ -91,9 +91,24 @@ extern volatile bool disablePWM;
 
 static const bool EnableLogging = true;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(
+    DataGraph* _motorGraph,
+    DataGraph* _simulationGraph,
+    DataGraph* _controllerGraph,
+    DataGraph* _debugGraph,
+    DataGraph* _voltageGraph,
+    IdIqGraph* _idigGraph,
+    DataGraph* _powerGraph,
+    QWidget*   parent)
+: QMainWindow(parent),
+  motorGraph(_motorGraph),
+  simulationGraph(_simulationGraph),
+  controllerGraph(_controllerGraph),
+  debugGraph(_debugGraph),
+  voltageGraph(_voltageGraph),
+  idigGraph(_idigGraph),
+  powerGraph(_powerGraph),
+  ui(new Ui::MainWindow)
 {
     if (EnableLogging)
     {
@@ -123,16 +138,6 @@ MainWindow::MainWindow(QWidget *parent) :
     if(settings.contains(ui->RoadGradient->objectName())) ui->RoadGradient->setText(settings.value(ui->RoadGradient->objectName(),QString()).toString());
     if(settings.contains(ui->ThrotRamps->objectName())) ui->ThrotRamps->setChecked(settings.value(ui->ThrotRamps->objectName()).toBool());
     if(settings.contains(ui->cb_Efficiency->objectName())) ui->cb_Efficiency->setChecked(settings.value(ui->cb_Efficiency->objectName()).toBool());
-
-    motorGraph = std::make_unique<DataGraph>("motor", this);
-    simulationGraph = std::make_unique<DataGraph>("sim", this);
-    controllerGraph = std::make_unique<DataGraph>("cont", this);
-    debugGraph = std::make_unique<DataGraph>("debug", this);
-    voltageGraph = std::make_unique<DataGraph>("voltage", this);
-    idigGraph = std::make_unique<IdIqGraph>("idig", this);
-    powerGraph = std::make_unique<DataGraph>("power", this);
-
-    motorGraph->hide();//not sure why needed but otherwise always up?
 
     ANA_IN_CONFIGURE(ANA_IN_LIST);
 

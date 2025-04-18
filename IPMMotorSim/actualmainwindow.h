@@ -27,6 +27,8 @@ class QMdiArea;
 QT_END_NAMESPACE
 
 class MainWindow;
+class DataGraph;
+class IdIqGraph;
 
 class ActualMainWindow : public QMainWindow
 {
@@ -40,7 +42,14 @@ protected:
 
 private:
     QMdiArea*   m_mdiArea;
-    MainWindow* m_paramWindow;
+    MainWindow* m_paramWindow = nullptr;
+    DataGraph*  m_motorGraph = nullptr;
+    DataGraph*  m_simulationGraph = nullptr;
+    DataGraph*  m_controllerGraph = nullptr;
+    DataGraph*  m_debugGraph = nullptr;
+    DataGraph*  m_voltageGraph = nullptr;
+    IdIqGraph*  m_idigGraph = nullptr;
+    DataGraph*  m_powerGraph = nullptr;
 };
 
 #endif // ACTUALMAINWINDOW_H

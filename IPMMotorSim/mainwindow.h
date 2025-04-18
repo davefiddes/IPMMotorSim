@@ -77,13 +77,13 @@ private:
 
     std::ofstream m_log;
 
-    std::unique_ptr<DataGraph> motorGraph;
-    std::unique_ptr<DataGraph> simulationGraph;
-    std::unique_ptr<DataGraph> controllerGraph;
-    std::unique_ptr<DataGraph> debugGraph;
-    std::unique_ptr<DataGraph> voltageGraph;
-    std::unique_ptr<IdIqGraph> idigGraph;
-    std::unique_ptr<DataGraph> powerGraph;
+    DataGraph* motorGraph;
+    DataGraph* simulationGraph;
+    DataGraph* controllerGraph;
+    DataGraph* debugGraph;
+    DataGraph* voltageGraph;
+    IdIqGraph* idigGraph;
+    DataGraph* powerGraph;
     std::unique_ptr<MotorModel> motor;
 
     double m_time;
@@ -100,7 +100,15 @@ private:
     int m_lastTorqueDemand;
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(
+        DataGraph* _motorGraph,
+        DataGraph* _simulationGraph,
+        DataGraph* _controllerGraph,
+        DataGraph* _debugGraph,
+        DataGraph* _voltageGraph,
+        IdIqGraph* _idigGraph,
+        DataGraph* _powerGraph,
+        QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
