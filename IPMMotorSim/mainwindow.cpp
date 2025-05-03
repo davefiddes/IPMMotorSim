@@ -1143,3 +1143,27 @@ void MainWindow::on_rb_OP_Amps_toggled(bool checked)
     }
 }
 
+void MainWindow::runForDuration(RunDuration duration)
+{
+    runFor(int(duration.count()/m_timestep));
+}
+
+void MainWindow::runSingleStep()
+{
+    on_pbStep_clicked();
+}
+
+void MainWindow::runTransient()
+{
+    on_pbTransient_clicked();
+}
+
+void MainWindow::runAccelCoast()
+{
+    on_pbAccelCoast_clicked();
+}
+
+void MainWindow::runRestart()
+{
+    on_pbRestart_clicked();
+}

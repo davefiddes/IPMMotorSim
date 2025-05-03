@@ -27,6 +27,7 @@
 
 #include <fstream>
 #include <memory>
+#include <chrono>
 
 
 namespace Ui {
@@ -100,6 +101,9 @@ private:
     int m_lastTorqueDemand;
 
 public:
+    typedef std::chrono::duration<double> RunDuration;
+
+public:
     MainWindow(
         DataGraph* _motorGraph,
         DataGraph* _simulationGraph,
@@ -110,6 +114,12 @@ public:
         DataGraph* _powerGraph,
         QWidget *parent = nullptr);
     ~MainWindow();
+
+    void runForDuration(RunDuration duration);
+    void runSingleStep();
+    void runTransient();
+    void runAccelCoast();
+    void runRestart();
 
 private slots:
     void on_vehicleWeight_editingFinished();

@@ -20,6 +20,7 @@
 #ifndef ACTUALMAINWINDOW_H
 #define ACTUALMAINWINDOW_H
 
+#include <chrono>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -39,6 +40,17 @@ public:
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+
+private slots:
+    void runFor();
+    void runForDuration(std::chrono::milliseconds duration);
+    void runSingleStep();
+    void runTransient();
+    void runAccelCoast();
+    void runRestart();
+
+private:
+    void createMenuAndActions();
 
 private:
     QMdiArea*   m_mdiArea;

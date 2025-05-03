@@ -17,23 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QMessageBox>
 #include <QtWidgets>
 
 #include "actualmainwindow.h"
-#include "mainwindow.h"
 #include "datagraph.h"
 #include "idiqgraph.h"
+#include "mainwindow.h"
+
+using namespace std::chrono;
 
 ActualMainWindow::ActualMainWindow(QWidget* parent)
 : QMainWindow(parent), m_mdiArea(new QMdiArea)
 {
-    QMenu*   fileMenu = new QMenu(tr("&File"), this);
-    QAction* quitAction = fileMenu->addAction(tr("E&xit"));
-    quitAction->setShortcuts(QKeySequence::Quit);
-    menuBar()->addMenu(fileMenu);
-
-    connect(quitAction, &QAction::triggered, this, &ActualMainWindow::close);
-
     m_mdiArea->setViewMode(QMdiArea::TabbedView);
     setCentralWidget(m_mdiArea);
     setWindowTitle(tr("OpenInverter IPM Motor Simulator"));
@@ -62,9 +58,120 @@ ActualMainWindow::ActualMainWindow(QWidget* parent)
     m_mdiArea->addSubWindow(m_voltageGraph);
     m_mdiArea->addSubWindow(m_idigGraph);
     m_mdiArea->addSubWindow(m_powerGraph);
+
+    createMenuAndActions();
 }
 
 void ActualMainWindow::closeEvent([[maybe_unused]] QCloseEvent* event)
 {
     m_mdiArea->closeAllSubWindows();
+}
+
+void ActualMainWindow::createMenuAndActions()
+{
+    QMenu*   fileMenu = new QMenu(tr("&File"), this);
+    QAction* quitAction = fileMenu->addAction(tr("E&xit"));
+    quitAction->setShortcuts(QKeySequence::Quit);
+    menuBar()->addMenu(fileMenu);
+
+    connect(quitAction, &QAction::triggered, this, &ActualMainWindow::close);
+
+    QMenu*   simulationMenu = new QMenu(tr("&Simulation"), this);
+    QAction* runForAction = simulationMenu->addAction(tr("Run for..."));
+    connect(runForAction, &QAction::triggered, this, &ActualMainWindow::runFor);
+
+    QAction* run10sAction = simulationMenu->addAction(tr("Run 10s"));
+    connect(run10sAction, &QAction::triggered, this, [this] {
+        runForDuration(10s);
+    });
+
+    QAction* run1sAction = simulationMenu->addAction(tr("Run 1s"));
+    connect(
+        run1sAction, &QAction::triggered, this, [this] { runForDuration(1s); });
+
+    QAction* run100msAction = simulationMenu->addAction(tr("Run 100ms"));
+    connect(run100msAction, &QAction::triggered, this, [this] {
+        runForDuration(100ms);
+    });
+
+    QAction* run10msAction = simulationMenu->addAction(tr("Run 10ms"));
+    connect(run10msAction, &QAction::triggered, this, [this] {
+        runForDuration(10ms);
+    });
+
+    QAction* runstepAction = simulationMenu->addAction(tr("&Single Step"));
+    connect(
+        runstepAction,
+        &QAction::triggered,
+        this,
+        &ActualMainWindow::runSingleStep);
+
+    QAction* transientAction = simulationMenu->addAction(tr("&Transient"));
+    connect(
+        transientAction,
+        &QAction::triggered,
+        this,
+        &ActualMainWindow::runTransient);
+
+    QAction* accelCoastAction = simulationMenu->addAction(tr("&Accel/Coast"));
+    connect(
+        accelCoastAction,
+        &QAction::triggered,
+        this,
+        &ActualMainWindow::runAccelCoast);
+
+    QAction* restartAction = simulationMenu->addAction(tr("&Restart"));
+    connect(
+        restartAction,
+        &QAction::triggered,
+        this,
+        &ActualMainWindow::runRestart);
+
+    menuBar()->addMenu(simulationMenu);
+}
+
+void ActualMainWindow::runFor()
+{
+    bool   ok{};
+    double duration = QInputDialog::getDouble(
+        this,
+        tr("Run for..."),
+        tr("Duration [s]:"),
+        5.0,
+        0,
+        100,
+        3,
+        &ok,
+        Qt::WindowFlags(),
+        1);
+
+    if (ok)
+    {
+        m_paramWindow->runForDuration(MainWindow::RunDuration(duration));
+    }
+}
+
+void ActualMainWindow::runForDuration(std::chrono::milliseconds duration)
+{
+    m_paramWindow->runForDuration(duration);
+}
+
+void ActualMainWindow::runSingleStep()
+{
+    m_paramWindow->runSingleStep();
+}
+
+void ActualMainWindow::runTransient()
+{
+    m_paramWindow->runTransient();
+}
+
+void ActualMainWindow::runAccelCoast()
+{
+    m_paramWindow->runAccelCoast();
+}
+
+void ActualMainWindow::runRestart()
+{
+    m_paramWindow->runRestart();
 }
