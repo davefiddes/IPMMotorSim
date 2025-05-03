@@ -50,7 +50,7 @@ ActualMainWindow::ActualMainWindow(QWidget* parent)
         m_idigGraph,
         m_powerGraph);
 
-    m_mdiArea->addSubWindow(m_paramWindow);
+    QMdiSubWindow* paramSubWin = m_mdiArea->addSubWindow(m_paramWindow);
     m_mdiArea->addSubWindow(m_motorGraph);
     m_mdiArea->addSubWindow(m_simulationGraph);
     m_mdiArea->addSubWindow(m_controllerGraph);
@@ -60,6 +60,8 @@ ActualMainWindow::ActualMainWindow(QWidget* parent)
     m_mdiArea->addSubWindow(m_powerGraph);
 
     createMenuAndActions();
+
+    m_mdiArea->setActiveSubWindow(paramSubWin);
 }
 
 void ActualMainWindow::closeEvent([[maybe_unused]] QCloseEvent* event)
